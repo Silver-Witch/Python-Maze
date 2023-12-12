@@ -1,0 +1,151 @@
+import random
+
+#Defining the dimentions of the maze
+WIDTH = 7
+HEIGHT = 7
+
+#Characters used to create the maze
+EMPTY = " "
+BUILD = "*"
+WALL = chr(9608)
+END = "X"
+
+#Creating the maze without any paths
+maze = {}
+for x in range(WIDTH):
+    for y in range(HEIGHT):
+        maze[(x, y)] = WALL
+
+def printmaze(maze, markX= None,markY= None):
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
+            if markX == x and markY == y:
+                print(BUILD, end = "")
+            else:
+                print(maze[(x,y)], end = "")
+        print()
+
+def print_end():
+    visit(WIDTH -2, HEIGHT - 2)
+    nextMove = UP
+    nextX = x
+    nextY = y - 2
+    maze[(x-1, y - 1)] = END
+    visit(1,1)
+def visit(x,y):
+    maze[(x,y)] = EMPTY
+    printmaze(maze, x, y)
+    print('\n\n')
+
+    while True:
+        unvisited = []
+        if y > 1 and (x,y-2) not in hasVisited:
+            unvisited.append(UP)
+        if y < HEIGHT - 2 and (x,y+2) not in hasVisited:
+            unvisited.append(DOWN)
+        if x > 1 and (x-2, y) not in hasVisited:
+            unvisited.append(LEFT)
+        if x < WIDTH - 2 and (x+2, y) not in hasVisited:
+            unvisited.append(RIGHT)
+        if len(unvisited) == 0:
+            return
+        else:
+            nextMove = random.choice(unvisited)
+            if nextMove == UP:
+                nextX = x
+                nextY = y - 2
+                alphaX = x
+                alphaY = y-1
+                maze[(x, y - 1)] = EMPTY
+            elif nextMove == DOWN:
+                nextX = x
+                nextY = y + 2
+                alphaX = x
+                alphaY = y+1
+                maze[(x, y + 1)] = EMPTY
+            elif nextMove == LEFT:
+                nextX = x - 2
+                nextY = y
+                alphaX = x-1
+                alphaY = y
+                maze[(x - 1, y)] = EMPTY
+            elif nextMove == RIGHT:
+                nextX = x + 2
+                nextY = y
+                alphaX = x+1
+                alphaY = y
+                maze[(x + 1, y)] = EMPTY
+            hasVisited.append((alphaX,alphaY))
+            hasVisited.append((nextX, nextY))
+            visit(nextX, nextY)
+
+def Physics(x,y, nextChoice = None):
+    Pathway = []
+    printmaze(maze,x,y)
+    print('\n\n')
+    while True:
+        nextChoice = input("Input a direction : ")
+        if nextChoice == "UP":
+            if y>1 and (x,y-1) in hasVisited:
+                nextX = x
+                nextY = y-1
+                maze[(x,y-1)] == EMPTY
+            else:
+                print("YOU CAN'T WALK THROUGH WALLS")
+                nextX = x
+                nextY = y
+                maze[(x, y)] == EMPTY
+        if nextChoice == "DOWN":
+            if y<HEIGHT-2 and (x,y+1) in hasVisited:
+                nextX = x
+                nextY = y+1
+                maze[(x,y+1)] == EMPTY
+            else:
+                print("YOU CAN'T WALK THROUGH WALLS")
+                nextX = x
+                nextY = y
+                maze[(x, y)] == EMPTY
+        if nextChoice == "RIGHT":
+            if x<WIDTH-2 and (x+1,y) in hasVisited:
+                nextX = x+1
+                nextY = y
+                maze[(x+1,y)] == EMPTY
+            else:
+                print("YOU CAN'T WALK THROUGH WALLS")
+                nextX = x
+                nextY = y
+                maze[(x, y)] == EMPTY
+        if nextChoice =="LEFT":
+            if x>1 and (x-1,y) in hasVisited:
+                nextX = x-1
+                nextY = y
+                maze[(x-1,y)] == EMPTY
+            else:
+                print("YOU CAN'T WALK THROUGH WALLS")
+                nextX = x
+                nextY = y
+                maze[(x, y)] == EMPTY
+        if nextChoice == "END":
+            if x == WIDTH -2 and y == HEIGHT -2:
+                print("Maze Completed")
+                quit()
+            else:
+                print("There is no exit, keep exploring")
+                return
+        Pathway.append((nextX,nextY))
+        Physics(nextX,nextY)
+
+
+
+hasVisited = [(1,1)]
+visit (1,1)
+
+printmaze(maze)
+print_end()
+print(hasVisited)
+
+x=1
+y=1
+print("Input UP, DOWN, LEFT, or RIGHT to move.")
+print("If you have found the exit,'X', input END")
+Physics(x,y)
